@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sabariah, S.A.B | Healthcare Specialist & Data Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC; --card: #FFFFFF; --border: #E2E8F0; --text: #0F172A;
+      --muted: #64748B; --blue: #2563EB; --blue-soft: #EFF6FF; --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; letter-spacing: -0.01em; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 74px; }
+    @media (min-width: 860px) { body { padding-bottom: 0; } }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    
+    /* Navbar */
+    .top-nav { position: sticky; top: 0; z-index: 100; height: 64px; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: var(--border); }
+    .nav-links { display: flex; gap: 4px; list-style: none; }
+    .nav-btn { background: none; border: none; font-size: 0.8rem; font-weight: 500; color: var(--muted); padding: 7px 11px; border-radius: 6px; cursor: pointer; transition: 0.15s; }
+    .nav-btn:hover, .nav-btn.active { color: var(--blue); background: var(--blue-soft); font-weight: 600; }
+    
+    /* Bottom Bar Mobile */
+    .bottom-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: 60px; background: #FFF; border-top: 1px solid var(--border); }
+    .bottom-inner { display: flex; justify-content: space-around; align-items: center; height: 100%; }
+    .tab-btn { background: none; border: none; font-size: 0.68rem; font-weight: 500; color: var(--muted); cursor: pointer; }
+    .tab-btn.active { color: var(--blue); font-weight: 700; }
+    @media (max-width: 859px) { .nav-links { display: none; } .bottom-bar { display: block; } }
+
+    /* UI Components */
+    .spa-view { display: none; animation: fadeIn 0.2s ease forwards; padding: 32px 0 50px; }
+    .spa-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; font-size: 0.82rem; font-weight: 600; border-radius: 8px; cursor: pointer; text-decoration: none; border: 1px solid transparent; }
+    .btn-blue { background: var(--blue); color: #FFF; }
+    .btn-outline { background: #FFF; color: var(--text); border-color: var(--border); }
+    .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+    
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 18px; margin-top: 20px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+    .badge { font-size: 0.7rem; font-weight: 600; color: var(--blue); background: var(--blue-soft); padding: 3px 8px; border-radius: 4px; width: fit-content; }
+    
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; padding: 30px 0; }
+    .hero img { width: 100%; max-width: 300px; height: 360px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--border); }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
+    .tag { font-size: 0.72rem; font-weight: 600; background: #FFF; border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; }
+    @media (max-width: 860px) { .hero { grid-template-columns: 1fr; text-align: center; } .hero img { margin: 0 auto; order: -1; } .tags, .hero-btns { justify-content: center; display: flex; } }
+
+    /* Modals & Toast */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+    .modal-box { background: #FFF; border-radius: var(--radius); max-width: 440px; width: 100%; padding: 24px; position: relative; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: #FFF; padding: 10px 16px; border-radius: 8px; font-size: 0.8rem; z-index: 300; display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <header class="top-nav">
+    <div class="container nav-inner">
+      <div class="brand" onclick="goView('view-home')">
+        <img src="https://lh3.googleusercontent.com/d/1sjs-drtJemgk6r7_YG9u-TyUx6nY9e1Q" onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200'" alt="Sabariah">
+        <div>
+          <h1 style="font-size:0.92rem; font-weight:700;">Sabariah, S.A.B</h1>
+          <p style="font-size:0.7rem; color:var(--muted);">Healthcare & Data Specialist</p>
+        </div>
+      </div>
+      <ul class="nav-links">
+        <li><button class="nav-btn active" onclick="goView('view-home')" data-t="view-home">Home</button></li>
+        <li><button class="nav-btn" onclick="goView('view-cert')" data-t="view-cert">Certifications</button></li>
+        <li><button class="nav-btn" onclick="goView('view-exp')" data-t="view-exp">Experience</button></li>
+        <li><button class="nav-btn" onclick="goView('view-trainer')" data-t="view-trainer">Trainer & IT</button></li>
+        <li><button class="nav-btn" onclick="goView('view-lead')" data-t="view-lead">Leadership</button></li>
+        <li><button class="nav-btn" onclick="goView('view-edu')" data-t="view-edu">Education</button></li>
+        <li><button class="nav-btn" onclick="goView('view-proj')" data-t="view-proj">Projects</button></li>
+        <li><button class="nav-btn" onclick="goView('view-contact')" data-t="view-contact">Contact</button></li>
+      </ul>
+      <div style="display:flex; gap:8px;">
+        <button onclick="toggleModal('modalCV', true)" class="btn btn-outline btn-sm">CV (ATS)</button>
+        <button onclick="goView('view-contact')" class="btn btn-blue btn-sm">Hubungi</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-bar">
+    <div class="bottom-inner">
+      <button class="tab-btn active" onclick="goView('view-home')" data-t="view-home">Home</button>
+      <button class="tab-btn" onclick="goView('view-cert')" data-t="view-cert">Sertif</button>
+      <button class="tab-btn" onclick="goView('view-exp')" data-t="view-exp">Karir</button>
+      <button class="tab-btn" onclick="goView('view-trainer')" data-t="view-trainer">IT/Data</button>
+      <button class="tab-btn" onclick="goView('view-contact')" data-t="view-contact">Kontak</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- VIEW 1: HOME -->
+    <div id="view-home" class="spa-view active">
+      <section class="hero">
+        <div>
+          <span class="badge" style="margin-bottom:12px;">Certified Caregiver & Healthcare VA</span>
+          <h2 style="font-size:2.2rem; font-weight:800; line-height:1.2; margin:10px 0;">Human Touch Caregiving,<br><span style="color:var(--blue);">Data-Driven Precision.</span></h2>
+          <p style="font-size:0.92rem; color:var(--muted); line-height:1.6;">
+            Menggabungkan kehangatan perawatan lansia klinis (Dubai & Hong Kong) dengan akurasi pengolahan data. Tersertifikasi <strong>BNSP Data Analyst</strong> & <strong>BNSP Microsoft Office</strong>, serta Volunteer Assistant Teacher Computer di <strong>YMCA Hong Kong</strong>.
+          </p>
+          <div class="tags">
+            <span class="tag">Healthcare & CNA</span>
+            <span class="tag">BNSP Data Analyst</span>
+            <span class="tag">BNSP Microsoft Office</span>
+            <span class="tag">Volunteer YMCA HK</span>
+            <span class="tag">Riset Sinta 4</span>
+          </div>
+          <div class="hero-btns" style="gap:10px; margin-top:20px;">
+            <button onclick="toggleModal('modalCV', true)" class="btn btn-blue">Download CV</button>
+            <button onclick="goView('view-contact')" class="btn btn-outline">Konsultasi</button>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:center;">
+          <img src="https://lh3.googleusercontent.com/d/1sjs-drtJemgk6r7_YG9u-TyUx6nY9e1Q" onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600'" alt="Sabariah, S.A.B">
+        </div>
+      </section>
+    </div>
+
+    <!-- VIEW 2: CERTIFICATIONS -->
+    <div id="view-cert" class="spa-view">
+      <h2 style="font-size:1.4rem; font-weight:700;">Sertifikasi Caregiving Internasional</h2>
+      <p style="font-size:0.85rem; color:var(--muted);">Kredensial kegawatdaruratan dan standar perawatan lansia Hong Kong, UK, dan US.</p>
+      <div id="grid-cert" class="card-grid"></div>
+    </div>
+
+    <!-- VIEW 3: EXPERIENCE -->
+    <div id="view-exp" class="spa-view">
+      <h2 style="font-size:1.4rem; font-weight:700;">Pengalaman Karir</h2>
+      <p style="font-size:0.85rem; color:var(--muted);">Jejak dedikasi perawatan pasien klinis dan transfer keahlian teknologi sejak 2016.</p>
+      <div id="grid-exp" class="card-grid"></div>
+    </div>
+
+    <!-- VIEW 4: TRAINER & IT -->
+    <div id="view-trainer" class="spa-view">
+      <h2 style="font-size:1.4rem; font-weight:700;">Trainer Documentation & Data Skills</h2>
+      <p style="font-size:0.85rem; color:var(--muted);">Kualifikasi BNSP Data Analyst, Office Suite, ISO 9001, dan Instruktur Komputer.</p>
+      <div id="grid-trainer" class="card-grid"></div>
+    </div>
+
+    <!-- VIEW 5: LEADERSHIP -->
+    <div id="view-lead" class="spa-view">
+      <h2 style="font-size:1.4rem; font-weight:700;">Organisasi & Kepemimpinan</h2>
+      <p style="font-size:0.85rem; color:var(--muted);">Peran aktif sebagai Ketua Bidang IKAUT Cabang Hong Kong dan penggerak komunitas.</p>
+      <div id="grid-lead" class="card-grid"></div>
+    </div>
+
+    <!-- VIEW 6: EDUCATION -->
+    <div id="view-edu" class="spa-view">
+      <h2 style="font-size:1.4rem; font-weight:700;">Pendidikan Formal</h2>
+      <p style="font-size:0.85rem; color:var(--muted);">Gelar S1 Sarjana Administrasi Bisnis (S.A.B) Universitas Terbuka berstatus Apostille Kemenkumham.</p>
+      <div id="grid-edu" class="card-grid"></div>
+    </div>
+
+    <!-- VIEW 7: PROJECTS & PUBLICATIONS -->
+    <div id="view-proj" class="spa-view">
+      <h2 style="font-size:1.4rem; font-weight:700;">Karya & Riset Ilmiah</h2>
+      <p style="font-size:0.85rem; color:var(--muted);">Dashboard analitika kesehatan, template monitoring tanda vital, portal web, dan Jurnal Sinta 4.</p>
+      <div id="grid-proj" class="card-grid"></div>
+    </div>
+
+    <!-- VIEW 8: CONTACT -->
+    <div id="view-contact" class="spa-view">
+      <div style="background:#0B132B; color:#FFF; padding:30px; border-radius:var(--radius);">
+        <h2 style="font-size:1.4rem; font-weight:700;">Hubungi Saya</h2>
+        <p style="font-size:0.85rem; color:#94A3B8; margin-bottom:20px;">Tersedia untuk Live-in Caregiver, Healthcare VA, dan Pelatihan Data.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px;">
+          <div>
+            <p style="font-size:0.8rem; color:#94A3B8;">Email Resmi</p>
+            <p style="font-weight:600; margin-bottom:12px;">riahsaba123@gmail.com</p>
+            <p style="font-size:0.8rem; color:#94A3B8;">WhatsApp</p>
+            <p style="font-weight:600; margin-bottom:12px;">+62 852-0208-8185</p>
+            <button onclick="toggleModal('modalQR', true)" class="btn btn-outline btn-sm" style="color:#000;">Scan QR WhatsApp</button>
+          </div>
+          <form onsubmit="sendMsg(event)" style="display:flex; flex-direction:column; gap:10px;">
+            <input type="text" id="fn" placeholder="Nama Lengkap" required style="padding:8px 12px; border-radius:6px; border:none;">
+            <input type="email" id="fe" placeholder="Email" required style="padding:8px 12px; border-radius:6px; border:none;">
+            <textarea id="fm" placeholder="Pesan / Kebutuhan" rows="3" required style="padding:8px 12px; border-radius:6px; border:none;"></textarea>
+            <button type="submit" class="btn btn-blue" style="justify-content:center;">Kirim Pesan</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL CV -->
+  <div id="modalCV" class="modal" onclick="toggleModal('modalCV', false)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3 style="font-size:1.1rem; font-weight:700;">Curriculum Vitae (ATS)</h3>
+      <p style="font-size:0.8rem; color:var(--muted); margin:8px 0 16px;">Memuat lisensi CNA HK, City & Guilds UK, ACA US, ASHI US, dan sertifikasi BNSP.</p>
+      <a href="https://drive.google.com/file/d/1jAV55lWwrJQa-xDAti3A_-q4BQLv0qyw/view?usp=drive_link" target="_blank" class="btn btn-blue" style="width:100%; justify-content:center;">Buka CV Langsung (PDF)</a>
+    </div>
+  </div>
+
+  <!-- MODAL QR -->
+  <div id="modalQR" class="modal" onclick="toggleModal('modalQR', false)">
+    <div class="modal-box" onclick="event.stopPropagation();" style="text-align:center;">
+      <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:12px;">Scan WhatsApp</h3>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fwa.me%2F6285202088185" alt="QR" style="margin:0 auto; display:block;">
+      <p style="font-size:0.85rem; font-weight:700; color:var(--blue); margin-top:12px;">+62 852-0208-8185</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Pesan berhasil dikirim!</div>
+
+  <script>
+    const DATA = [
+      { cat: "cert", sub: "Hong Kong (CNA)", t: "CNA (HK): First Aid & CPR with AED", org: "St. John / CNA HK", d: "Respon darurat, resusitasi jantung paru (CPR), dan penggunaan AED terakreditasi.", url: "https://drive.google.com/file/d/1EiZkyv7M0ZPH2_Iw6HGG5G2o_-0N9tS1/view?usp=sharing" },
+      { cat: "cert", sub: "UK (City & Guilds)", t: "City & Guilds: Assured Caregiving", org: "City & Guilds UK", d: "Standar perawatan medis lansia komprehensif, etika klinis, dan keselamatan pasien.", url: "https://drive.google.com/file/d/1Nvz60A5ee8YZ1tTEJ-UK9E5-IVpbNMiI/view?usp=sharing" },
+      { cat: "cert", sub: "USA (ACA)", t: "ACA: National Caregiver Certificate", org: "American Caregiver Assoc.", d: "Standar asistensi kehidupan sehari-hari (ADL) dan pendampingan geriatri.", url: "https://drive.google.com/drive/folders/1160N50H0FluMb3WtCechbms4oaWEh9QJ?usp=drive_link" },
+      { cat: "cert", sub: "USA (ASHI)", t: "ASHI: Adult CPR & AED Card", org: "ASHI USA", d: "Kualifikasi respon darurat dewasa, protokol CPR, dan sertifikasi resmi ASHI.", url: "https://drive.google.com/file/d/13i9nMlJk-WshDOJ4moQhoFqnYx9WGCyM/view?usp=drive_link" },
+      { cat: "cert", sub: "UK (TQUK)", t: "TQUK: Caregiving Level 2", org: "TQUK (Ofqual UK)", d: "Perawatan klinis lansia tingkat lanjut, demensia, dan pemantauan nutrisi pasien.", url: "https://drive.google.com/file/d/1oyCAakZ2VLD-tG0DZeowXxQU9JDTl4C3/view?usp=drive_link" },
+      
+      { cat: "exp", sub: "Live-in Care", t: "Caregiver Dubai LIVE IN", org: "Dubai Residence (2016-2018)", d: "Perawatan lansia intensif, jadwal obat presisi, tanda vital, dan pendampingan mobilitas.", url: "" },
+      { cat: "exp", sub: "Live-in & Telehealth", t: "Hong Kong Live-in & Virtual Care", org: "Hong Kong (2025-Present)", d: "Perawatan komprehensif (tensi, luka diabetes, kursi roda) & koordinasi telehealth.", url: "" },
+      { cat: "exp", sub: "Volunteering", t: "Volunteer Assistant Teacher Computer", org: "YMCA Hong Kong (2025-Present)", d: "Pengajaran literasi komputer dan keamanan digital komunitas pekerja migran.", url: "https://drive.google.com/drive/folders/194GLEHT8K5H4SOqa_Ov7OpGtgasaxaHG?usp=drive_link" },
+      { cat: "exp", sub: "Training", t: "Trainer Computer & Literasi Data", org: "UTLLN HK (2025-Present)", d: "Instruktur analisis spreadsheet dan Microsoft Office lanjutan bagi mahasiswa.", url: "https://drive.google.com/file/d/1OsrXfLN9PjqgeVBA-C1bGsF5eAvArmvA/view?usp=drive_link" },
+
+      { cat: "trainer", sub: "BNSP Data", t: "BNSP Data Analyst", org: "BNSP Indonesia", d: "Standar kompetensi pembersihan data, visualisasi analitik, dan perumusan rekomendasi.", url: "https://drive.google.com/file/d/1ZbEUqKULJR-AaR39N9IZoBm2DVrmZhXJ/view?usp=sharing" },
+      { cat: "trainer", sub: "BNSP Office", t: "BNSP Microsoft Office", org: "BNSP Indonesia", d: "Otomatisasi pengolahan dokumen, tabel terpadu, dan administrasi perkantoran efisien.", url: "https://drive.google.com/file/d/1HTuzbpKkjTbwbM973j2Ui6aekKHsCTXa/view?usp=sharing" },
+      { cat: "trainer", sub: "Data Specialist", t: "Excel & Data Entry Specialist", org: "Lembaga Sertifikasi", d: "Validasi dataset masal, formula analitis, dan standarisasi formulir kesehatan.", url: "https://drive.google.com/file/d/1H00PWw93cdfNojYdurA8KJ6Bcrdawqzl/view?usp=drive_link" },
+      { cat: "trainer", sub: "Kualitas & K3", t: "ISO 9001 & Fire Safety HK", org: "QMS & HK Safety Standard", d: "Manajemen mutu terstruktur dan mitigasi keselamatan kebakaran gedung bertingkat.", url: "https://drive.google.com/file/d/1GmB7exv4iFeaZG3YdsaE3qj0QIfj-ORP/view?usp=drive_link" },
+
+      { cat: "lead", sub: "Alumni Association", t: "Ketua Bidang IKAUT Cabang HK", org: "IKAUT Hong Kong (2024-Present)", d: "Menggerakkan pelatihan IT, pengabdian masyarakat, dan program jejaring alumni.", url: "https://drive.google.com/file/d/1Cf7T1WFzygzEu0IWXPgYNd2SDEvTehlu/view?usp=drive_link" },
+      { cat: "lead", sub: "Advokasi", t: "Penggerak Literasi Digital Komunitas", org: "Komunitas Migran HK", d: "Inisiator pelatihan komputer dan kolaborasi riset produktif diaspora.", url: "https://drive.google.com/file/d/1zuCOEcJbIJAzc2GW2Z4cAQsc96ygqiZ3/view?usp=drive_link" },
+
+      { cat: "edu", sub: "Strata 1", t: "Sarjana Administrasi Bisnis (S.A.B)", org: "Universitas Terbuka (UTLLN HK)", d: "Spesialisasi Sistem Informasi dan Manajemen Operasional dengan Ijazah Apostille Kemenkumham.", url: "https://drive.google.com/drive/folders/160pS-gFkXw-DB6O9idJPxzotZp1ypKH2?usp=drive_link" },
+
+      { cat: "proj", sub: "Kesehatan", t: "Caregiving Daily Report Templates", org: "Sistem Operasional", d: "Pencatatan tanda vital pasien lansia, jadwal obat, dan komunikasi dokter.", url: "https://drive.google.com/file/d/1jxfGAUKXnccdu8ePX0Q5l2hVZmZ3iut_/view?usp=sharing" },
+      { cat: "proj", sub: "Data Dashboards", t: "Health Data Dashboard (Power BI)", org: "Healthcare Analytics", d: "Visualisasi tren tekanan darah berkala dan jadwal telehealth interaktif.", url: "https://drive.google.com/file/d/1T7BL4JIPKBieea1tOhkgMN1KPEkcF8yH/view?usp=drive_link" },
+      { cat: "proj", sub: "Web Platform", t: "Website Resmi IKA – UTLLN HK", org: "Portal Alumni Terpadu", d: "Direktori beasiswa, materi pelatihan, dan pusat informasi komunitas.", url: "https://ikauthk.srh.ai.id/" },
+      { cat: "proj", sub: "Publikasi Ilmiah", t: "Jurnal Manajemen (Sinta 4, 2025)", org: "Publikasi Ilmiah", d: "Karya ilmiah strategi pemasaran produk edukasi digital pada platform online.", url: "https://penerbitadm.pubmedia.id/index.php/JER/article/view/2630" }
+    ];
+
+    function goView(viewId) {
+      document.querySelectorAll('.spa-view').forEach(v => v.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.nav-btn, .tab-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-t') === viewId);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleModal(id, open) {
+      document.getElementById(id).style.display = open ? 'flex' : 'none';
+    }
+
+    function renderCards() {
+      const map = { cert: 'grid-cert', exp: 'grid-exp', trainer: 'grid-trainer', lead: 'grid-lead', edu: 'grid-edu', proj: 'grid-proj' };
+      DATA.forEach(d => {
+        const wrap = document.getElementById(map[d.cat]);
+        if (!wrap) return;
+        const btn = d.url ? `<a href="${d.url}" target="_blank" class="btn btn-outline btn-sm" style="margin-top:14px; width:100%; justify-content:center;">Buka Dokumen</a>` : '';
+        wrap.innerHTML += `
+          <div class="card">
+            <div>
+              <span class="badge">${d.sub}</span>
+              <h3 style="font-size:0.96rem; font-weight:700; margin:8px 0 2px;">${d.t}</h3>
+              <p style="font-size:0.75rem; color:var(--muted); margin-bottom:8px;">${d.org}</p>
+              <p style="font-size:0.82rem; color:#475569; line-height:1.5;">${d.d}</p>
+            </div>
+            ${btn}
+          </div>
+        `;
+      });
+    }
+
+    function sendMsg(e) {
+      e.preventDefault();
+      const toast = document.getElementById('toast');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+      e.target.reset();
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCards);
+  </script>
+</body>
+</html>
